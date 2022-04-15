@@ -5,30 +5,30 @@ import { connectRouter } from "connected-react-router";
 import logger from "redux-logger";
 
 import User from "./modules/user";
+import Post from "./modules/post";
+import Image from "./modules/image";
 
 export const history = createBrowserHistory();
 
+/*********************녀다ㅣ */
 const rootReducer = combineReducers({
   user: User,
+  post: Post,
+  image: Image,
   router: connectRouter(history),
 });
 
-// const middlewares = [thunk];
 const middlewares = [thunk.withExtraArgument({ history: history })];
 
-// 지금이 어느 환경인 지 알려줘요. (개발환경, 프로덕션(배포)환경 ...)
 const env = import.meta.env.DEV;
 
-// 개발환경에서는 로거라는 걸 하나만 더 써볼게요.
 if (env) {
   middlewares.push(logger);
 }
 
 const composeEnhancers =
   typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      })
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
     : compose;
 
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));

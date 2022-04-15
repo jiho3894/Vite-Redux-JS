@@ -35,11 +35,14 @@ const Post = (props) => {
 };
 
 Post.defaultProps = {
+  id: 0,
   user_info: {
     user_name: "mean0",
-    user_profile: "https://mean0images.s3.ap-northeast-2.amazonaws.com/4.jpeg",
+    user_profile:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXIZ5TkLzY7zdURZgU2u172GrUwhjTosxfkg&usqp=CAU",
   },
-  image_url: "https://mean0images.s3.ap-northeast-2.amazonaws.com/4.jpeg",
+  image_url:
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXIZ5TkLzY7zdURZgU2u172GrUwhjTosxfkg&usqp=CAU",
   contents: "고양이네요!",
   comment_cnt: 10,
   insert_dt: "2021-02-27 10:00:00",
