@@ -4,6 +4,7 @@ import { Grid, Image, Text, Button } from "../elements";
 import { history } from "../redux/configureStore";
 
 const Post = (props) => {
+  console.log(props.is_me);
   return (
     <React.Fragment>
       <Grid>

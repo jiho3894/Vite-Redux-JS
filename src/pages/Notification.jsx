@@ -3,6 +3,7 @@ import { Grid, Text, Image } from "../elements";
 import Card from "../components/Card";
 
 const Notification = (props) => {
+  console.log(props);
   let noti = [
     { user_name: "aaaaa", post_id: "post1", image_url: "" },
     { user_name: "aaaaa", post_id: "post2", image_url: "" },
