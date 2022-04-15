@@ -2,6 +2,7 @@ import React from "react";
 import { Grid, Image, Text } from "../elements";
 
 const CommentList = () => {
+  /* 댓글리스트 CommentItem은 이후에 데이터 가져와 map으로 뿌릴예정 */
   return (
     <React.Fragment>
       <Grid padding="16px">
@@ -19,6 +20,7 @@ const CommentList = () => {
 export default CommentList;
 
 const CommentItem = (props) => {
+  /* 댓글 별 정보 */
   const { user_profile, user_name, user_id, post_id, contents, insert_dt } =
     props;
   return (

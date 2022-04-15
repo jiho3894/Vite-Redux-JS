@@ -4,7 +4,7 @@ import CommentList from "../components/CommentList";
 import CommentWrite from "../components/CommentWrite";
 
 const PostDetail = (props) => {
-  console.log(props);
+  // console.log(props); history props
   return (
     <React.Fragment>
       <Post />

@@ -25,12 +25,14 @@ const initialState = {
 // middleware actions
 const loginFB = (id, pwd) => {
   return function (dispatch, getState, { history }) {
+    //////////////////////////////////
+    // 이후 FB 문법 변경
     auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then((res) => {
       auth
         .signInWithEmailAndPassword(id, pwd)
         .then((user) => {
           console.log(user);
-
+          // 로그인 유저에 대한 정보 setUser를 통해 initialState 변경
           dispatch(
             setUser({
               user_name: user.user.displayName,
@@ -39,7 +41,7 @@ const loginFB = (id, pwd) => {
               uid: user.user.uid,
             })
           );
-
+          // 로그인 이후 메인페이지 이동
           history.push("/");
         })
         .catch((error) => {
@@ -54,6 +56,8 @@ const loginFB = (id, pwd) => {
 
 const signupFB = (id, pwd, user_name) => {
   return function (dispatch, getState, { history }) {
+    //////////////////////////////////
+    // 이후 FB 문법 변경
     auth
       .createUserWithEmailAndPassword(id, pwd)
       .then((user) => {
@@ -68,11 +72,14 @@ const signupFB = (id, pwd, user_name) => {
               setUser({
                 user_name: user_name,
                 id: id,
+                // 여기가 없어서 동일한 default 사진이 나옴
                 user_profile: "",
                 uid: user.user.uid,
               })
             );
+            // 회원가입이후 메인페이지로 이동
             history.push("/");
+            console.log(initialState);
           })
           .catch((error) => {
             console.log(error);
@@ -89,8 +96,11 @@ const signupFB = (id, pwd, user_name) => {
 
 const loginCheckFB = () => {
   return function (dispatch, getState, { history }) {
+    //////////////////////////////////
+    // 이후 FB 문법 변경
     auth.onAuthStateChanged((user) => {
       if (user) {
+        // 해당 유저 마다 정보 저장
         dispatch(
           setUser({
             user_name: user.displayName,
@@ -100,6 +110,7 @@ const loginCheckFB = () => {
           })
         );
       } else {
+        // deleteCookie 함수 실행
         dispatch(logOut());
       }
     });
@@ -108,8 +119,12 @@ const loginCheckFB = () => {
 
 const logoutFB = () => {
   return function (dispatch, getState, { history }) {
+    //////////////////////////////////
+    // 이후 FB 문법 변경
     auth.signOut().then(() => {
+      // deleteCookie 함수 실행
       dispatch(logOut());
+      // 메인 페이지로 이동
       history.replace("/");
     });
   };
@@ -120,12 +135,15 @@ export default handleActions(
   {
     [SET_USER]: (state, action) =>
       produce(state, (draft) => {
+        // 로그인시 cookie에 is_login success 발동
+        // is_session 처리는 어케 할건지 아까 수정때 이미지 살아있는거
         setCookie("is_login", "success");
         draft.user = action.payload.user;
         draft.is_login = true;
       }),
     [LOG_OUT]: (state, action) =>
       produce(state, (draft) => {
+        // 로그아웃 다 다운 시키기
         deleteCookie("is_login");
         draft.user = null;
         draft.is_login = false;

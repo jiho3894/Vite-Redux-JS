@@ -28,6 +28,8 @@ function App() {
 
   React.useEffect(() => {
     if (is_session) {
+      // session 이 존재하면 즉, 로그인 했을때 header 등 여러가지 컨트롤용
+      // 
       dispatch(userActions.loginCheckFB());
     }
   }, []);

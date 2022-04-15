@@ -3,6 +3,7 @@ import React from "react";
 import { Grid, Input, Button } from "../elements";
 
 const CommentWrite = () => {
+  /* 댓글 입력 폼 */
   return (
     <React.Fragment>
       <Grid padding="16px" is_flex>

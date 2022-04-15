@@ -7,6 +7,7 @@ import { actionCreators as userActions } from "../redux/modules/user";
 import { emailCheck } from "../shared/common";
 
 const Login = (props) => {
+  // console.log(props); history props
   const dispatch = useDispatch();
 
   const [id, setId] = React.useState("");
@@ -19,12 +20,14 @@ const Login = (props) => {
       window.alert("아이디 혹은 비밀번호가 공란입니다! 입력해주세요!");
       return;
     }
-
+    //common.js 정규식 체크하기
     if (!emailCheck(id)) {
       window.alert("이메일 형식이 맞지 않습니다!");
       return;
     }
-
+    //loginFB id,pwd state값을 넣어서 dispatch =>
+    //loginFB => setUser => setCookie에 로그인 success 여부 만들기
+    // history.push('/')
     dispatch(userActions.loginFB(id, pwd));
   };
 

@@ -2,8 +2,9 @@ import React from "react";
 import { Grid, Image, Text } from "../elements";
 
 const Card = (props) => {
+  /* 가져온 props 비구조로 변수 생성하기 */
   const { image_url, user_name, post_id } = props;
-  console.log(props);
+
   return (
     <Grid padding="16px" is_flex bg="#ffffff" margin="8px 0px">
       <Grid width="auto" margin="0px 8px 0px 0px">

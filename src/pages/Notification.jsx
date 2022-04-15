@@ -3,7 +3,8 @@ import { Grid, Text, Image } from "../elements";
 import Card from "../components/Card";
 
 const Notification = (props) => {
-  console.log(props);
+  // console.log(props); history props
+  // noti mock api
   let noti = [
     { user_name: "aaaaa", post_id: "post1", image_url: "" },
     { user_name: "aaaaa", post_id: "post2", image_url: "" },
@@ -15,6 +16,7 @@ const Notification = (props) => {
   return (
     <React.Fragment>
       <Grid padding="16px" bg="#EFF6FF">
+        {/* 댓글 card components 가져오기 ...n prop 뿌리기*/}
         {noti.map((n) => {
           return <Card key={n.post_id} {...n} />;
         })}

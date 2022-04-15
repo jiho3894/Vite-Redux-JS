@@ -8,8 +8,10 @@ import User from "./modules/user";
 import Post from "./modules/post";
 import Image from "./modules/image";
 
+// connect router 
 export const history = createBrowserHistory();
 
+// middleware 합치기 selector 사용
 const rootReducer = combineReducers({
   user: User,
   post: Post,

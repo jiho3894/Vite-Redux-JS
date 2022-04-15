@@ -16,19 +16,23 @@ const setPreview = createAction(SET_PREVIEW, (preview) => ({ preview }));
 function uploadImageFB(image) {
   return function (dispatch, getState, { history }) {
     dispatch(uploading(true));
+    // FB에 들어갈 사진 이름
     console.log(`images/${new Date().getTime()}_${image.name}`);
     const _upload = storage.ref(`images/${image.name}`).put(image);
-
+    //////////////////////////////////
+    // 이후 FB 문법 변경
     _upload
       .then((snapshot) => {
         console.log(snapshot);
 
         snapshot.ref.getDownloadURL().then((url) => {
           console.log(url);
+          // 가공한 url initialState image_url 변경
           dispatch(uploadImage(url));
         });
       })
       .catch((err) => {
+        // 오류 catch시 업로드 금지
         dispatch(uploading(false));
       });
   };
@@ -37,6 +41,7 @@ function uploadImageFB(image) {
 // initial state
 const initialState = {
   image_url: "http://via.placeholder.com/400x300",
+  // 연속 파일 업로드 금지
   uploading: false,
   preview: null,
 };
@@ -57,7 +62,9 @@ export default handleActions(
 
     [SET_PREVIEW]: (state, action) =>
       produce(state, (draft) => {
+        // reader.result 값이 preview에 들어감 initialState
         draft.preview = action.payload.preview;
+        // console.log(action.payload.preview); <==
       }),
   },
   initialState

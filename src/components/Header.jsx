@@ -9,8 +9,10 @@ import styled from "styled-components";
 
 const Header = (props) => {
   const dispatch = useDispatch();
+  // 로그인 여부에 따른 헤더 모양 변경
   const is_login = useSelector((state) => state.user.is_login);
   const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]`;
+  // 세션 존재 여부까지 확인
   const is_session = sessionStorage.getItem(_session_key) ? true : false;
   return (
     <React.Fragment>
@@ -29,6 +31,7 @@ const Header = (props) => {
               }}
               text="알림"
             ></Button>
+            {/* deleteCookie */}
             <Button
               text="로그아웃"
               _onClick={() => dispatch(actionCreators.logoutFB({}))}

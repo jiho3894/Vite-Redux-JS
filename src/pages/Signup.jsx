@@ -6,6 +6,7 @@ import { actionCreators as userActions } from "../redux/modules/user";
 import { emailCheck } from "../shared/common";
 
 const Signup = (props) => {
+  // console.log(props); history props
   const dispatch = useDispatch();
 
   const [id, setId] = React.useState("");
@@ -18,7 +19,7 @@ const Signup = (props) => {
       window.alert("아이디, 패스워드, 닉네임을 모두 입력해주세요!");
       return;
     }
-
+    //common.js 정규식 체크하기
     if (!emailCheck(id)) {
       window.alert("이메일 형식이 맞지 않습니다!");
       return;
@@ -28,7 +29,9 @@ const Signup = (props) => {
       window.alert("패스워드와 패스워드 확인이 일치하지 않습니다!");
       return;
     }
-
+    //signupFB id,pwd,user_name state값을 넣어서 dispatch =>
+    //signupFB => setUser => history.push('/')
+    // 궁금 : 로그인과 같은 setUser로 이동해 쿠키에 로그인 성공 여부를 넣은 이유는???
     dispatch(userActions.signupFB(id, pwd, user_name));
   };
   return (
