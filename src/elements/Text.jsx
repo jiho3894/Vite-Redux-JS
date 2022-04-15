@@ -14,9 +14,10 @@ Text.defaultProps = {
   color: "#222831",
   size: "14px",
   margin: false,
+  _onClick: () => {},
 };
 
-const P = styled.p`
+const P = styled.span`
   color: ${(props) => props.color};
   font-size: ${(props) => props.size};
   font-weight: ${(props) => (props.bold ? "600" : "400")};

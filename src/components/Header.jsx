@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { actionCreators } from "../redux/modules/user";
 import { history } from "../redux/configureStore";
 import { apiKey } from "../shared/firebase";
+import styled from "styled-components";
 
 const Header = (props) => {
   const dispatch = useDispatch();
@@ -15,9 +16,9 @@ const Header = (props) => {
     <React.Fragment>
       <Grid is_flex padding="4px 16px">
         <Grid>
-          <Text margin="0px" size="24px" bold>
-            헬로
-          </Text>
+          <MainHome onClick={() => history.push("/")}>
+            <span>헬로우</span>
+          </MainHome>
         </Grid>
         {is_login && is_session ? (
           <Grid is_flex>
@@ -51,5 +52,13 @@ const Header = (props) => {
 };
 
 Header.defaultProps = {};
+
+/* 임시 헤더 제목 창 클릭용 */
+const MainHome = styled.div`
+  width: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 600;
+`;
 
 export default Header;
