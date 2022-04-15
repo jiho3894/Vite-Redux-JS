@@ -77,16 +77,12 @@ const signupFB = (id, pwd, user_name) => {
           .catch((error) => {
             console.log(error);
           });
-
-        // Signed in
-        // ...
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
 
         console.log(errorCode, errorMessage);
-        // ..
       });
   };
 };

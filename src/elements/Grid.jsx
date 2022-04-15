@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 
 const Grid = (props) => {
-  const { is_flex, width, margin, padding, bg, center, children } = props;
+  const { is_flex, width, margin, padding, bg, children, center } = props;
+
   const styles = {
     is_flex,
     width,
@@ -19,7 +20,7 @@ const Grid = (props) => {
 };
 
 Grid.defaultProps = {
-  children: null,
+  chidren: null,
   is_flex: false,
   width: "100%",
   padding: false,

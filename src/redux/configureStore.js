@@ -10,7 +10,6 @@ import Image from "./modules/image";
 
 export const history = createBrowserHistory();
 
-/*********************녀다ㅣ */
 const rootReducer = combineReducers({
   user: User,
   post: Post,
@@ -18,17 +17,23 @@ const rootReducer = combineReducers({
   router: connectRouter(history),
 });
 
-const middlewares = [thunk.withExtraArgument({ history: history })];
-
 const env = import.meta.env.DEV;
 
+const middlewares = [thunk.withExtraArgument({ history: history })];
 if (env) {
+  middlewares.push(logger);
+}
+
+if (env === "development") {
+  const { logger } = require("redux-logger");
   middlewares.push(logger);
 }
 
 const composeEnhancers =
   typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+      })
     : compose;
 
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));
