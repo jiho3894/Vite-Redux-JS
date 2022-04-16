@@ -5,7 +5,7 @@ import { history } from "../redux/configureStore";
 
 const Post = (props) => {
   // console.log(props.is_me); 본인인지 확인하기
-  console.log(props);
+  // console.log(props);
   return (
     <React.Fragment>
       <Grid>

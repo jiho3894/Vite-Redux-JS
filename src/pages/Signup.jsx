@@ -50,7 +50,6 @@ const Signup = (props) => {
             }}
           />
         </Grid>
-
         <Grid padding="16px 0px">
           <Input
             label="닉네임"

@@ -7,8 +7,9 @@ import logger from "redux-logger";
 import User from "./modules/user";
 import Post from "./modules/post";
 import Image from "./modules/image";
+import Comment from "./modules/comment";
 
-// connect router 
+// connect router
 export const history = createBrowserHistory();
 
 // middleware 합치기 selector 사용
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   user: User,
   post: Post,
   image: Image,
+  comment: Comment,
   router: connectRouter(history),
 });
 
@@ -23,12 +25,12 @@ const env = import.meta.env.DEV;
 
 const middlewares = [thunk.withExtraArgument({ history: history })];
 if (env) {
-  middlewares.push(logger);
+  // middlewares.push(logger);
 }
 
 if (env === "development") {
   const { logger } = require("redux-logger");
-  middlewares.push(logger);
+  // middlewares.push(logger);
 }
 
 const composeEnhancers =

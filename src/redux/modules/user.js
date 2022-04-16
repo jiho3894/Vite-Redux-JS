@@ -40,6 +40,10 @@ const loginFB = (id, pwd) => {
               user_profile: "",
               uid: user.user.uid,
             })
+            //////////////////////////////////////
+            // id, user_profile, uid 필요없음
+            // user_password 양식 따로 필요함
+            // 결론 : user_name => user_email(수정) , user_password
           );
           // 로그인 이후 메인페이지 이동
           history.push("/");
@@ -75,6 +79,10 @@ const signupFB = (id, pwd, user_name) => {
                 // 여기가 없어서 동일한 default 사진이 나옴
                 user_profile: "",
                 uid: user.user.uid,
+                //////////////////////////////////////
+                // id, user_profile, uid 필요없음
+                // user_password 양식 따로 필요함
+                // 결론 : user_email(아이디) , user_password(비밀번호) , user_name(닉네임)
               })
             );
             // 회원가입이후 메인페이지로 이동

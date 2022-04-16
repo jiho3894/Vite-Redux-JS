@@ -1,26 +1,46 @@
+// components/CommentList.js
 import React from "react";
 import { Grid, Image, Text } from "../elements";
 
-const CommentList = () => {
-  /* 댓글리스트 CommentItem은 이후에 데이터 가져와 map으로 뿌릴예정 */
+import { useDispatch, useSelector } from "react-redux";
+import { actionCreators as commentActions } from "../redux/modules/comment";
+
+const CommentList = (props) => {
+  const dispatch = useDispatch();
+  const comment_list = useSelector((state) => state.comment.list);
+  const { post_id } = props;
+  // console.log(post_id);
+  React.useEffect(() => {
+    if (!comment_list[post_id]) {
+      // 코멘트 정보가 없으면 불러오기
+      dispatch(commentActions.getCommentFB(post_id));
+    }
+  }, []);
+
+  // comment가 없거나, post_id가 없으면 아무것도 안넘겨준다!
+  if (!comment_list[post_id] || !post_id) {
+    return null;
+  }
+
   return (
     <React.Fragment>
       <Grid padding="16px">
-        <CommentItem />
-        <CommentItem />
-        <CommentItem />
-        <CommentItem />
-        <CommentItem />
-        <CommentItem />
+        {/* 해당 포스터를 불러와 map */}
+        {comment_list[post_id].map((c) => {
+          return <CommentItem key={c.id} {...c} />;
+        })}
       </Grid>
     </React.Fragment>
   );
 };
 
+CommentList.defaultProps = {
+  post_id: null,
+};
+
 export default CommentList;
 
 const CommentItem = (props) => {
-  /* 댓글 별 정보 */
   const { user_profile, user_name, user_id, post_id, contents, insert_dt } =
     props;
   return (
@@ -39,7 +59,7 @@ const CommentItem = (props) => {
 
 CommentItem.defaultProps = {
   user_profile: "",
-  user_name: "jiho",
+  user_name: "mean0",
   user_id: "",
   post_id: 1,
   contents: "귀여운 고양이네요!",
