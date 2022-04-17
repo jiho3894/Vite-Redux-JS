@@ -16,6 +16,7 @@ const PostList = (props) => {
   const user_info = useSelector((state) => state.user.user);
   // console.log(user_info); <== 현재 user를 확인해 수정 버튼 토글
   const { history } = props;
+  console.log(post_list);
   React.useEffect(() => {
     // 확인 용도 vite connected 전 빈 배열이긴함
     if (post_list.length < 2) {
@@ -34,33 +35,18 @@ const PostList = (props) => {
           loading={is_loading}
         >
           {post_list.map((p, idx) => {
-            if (p.user_info.user_id === user_info?.uid) {
-              // is_me 기존에 false
-              return (
-                <Grid
-                  bg="#ffffff"
-                  margin="8px 0px"
-                  key={p.id}
-                  _onClick={() => {
-                    history.push(`/post/${p.id}`);
-                  }}
-                >
-                  <Post {...p} is_me />
-                </Grid>
-              );
-            } else {
-              return (
-                <Grid
-                  key={p.id}
-                  _onClick={() => {
-                    // 해당 포스터로 이동
-                    history.push(`/post/${p.id}`);
-                  }}
-                >
-                  <Post {...p} />
-                </Grid>
-              );
-            }
+            return (
+              <Grid
+                bg="#ffffff"
+                margin="8px 0px"
+                key={p.id}
+                _onClick={() => {
+                  history.push(`/post/${p.id}`);
+                }}
+              >
+                <Post {...p} />
+              </Grid>
+            );
           })}
         </InfinityScroll>
       </Grid>

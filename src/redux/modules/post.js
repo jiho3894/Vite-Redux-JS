@@ -9,6 +9,7 @@ import { actionCreators as imageActions } from "./image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
+const DEL_POST = "DEL_POST";
 const LOADING = "LOADING";
 
 const setPost = createAction(SET_POST, (post_list, paging) => ({
@@ -20,6 +21,7 @@ const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
   post,
 }));
+const delPost = createAction(DEL_POST, (post_id) => ({ post_id }));
 const loading = createAction(LOADING, (is_loading) => ({ is_loading }));
 
 const initialState = {
@@ -33,6 +35,7 @@ const initialPost = {
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXIZ5TkLzY7zdURZgU2u172GrUwhjTosxfkg&usqp=CAU",
   contents: "",
   comment_cnt: 0,
+  like_cnt: 0,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
 };
 /////////////////////////////////
@@ -68,7 +71,7 @@ const editPostFB = (post_id = null, post = {}) => {
           /* id 값과 , 변경하는 contents */
           //,contents , image_url
           dispatch(editPost(post_id, { ...post }));
-          history.replace("/");
+          history.goBack();
         });
 
       return;
@@ -98,7 +101,7 @@ const editPostFB = (post_id = null, post = {}) => {
               .then((doc) => {
                 /* id 값과 , 변경하는 post contents, image_url */
                 dispatch(editPost(post_id, { ...post, image_url: url }));
-                history.replace("/");
+                history.goBack();
               });
           })
           .catch((err) => {
@@ -241,6 +244,31 @@ const getPostFB = (start = null, size = 3) => {
   };
 };
 
+const delPostFB = (id) => {
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("post");
+    console.log(id);
+    postDB
+      .doc(id)
+      .delete()
+      .then(() => {
+        dispatch(delPost(id));
+        history.replace("/");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    // .delete()
+    // .then(() => {
+    //   console.log("success");
+    // })
+    // .catch((err) => {
+    //   console.error(err);
+    // });
+  };
+};
+
 const getOnePostFB = (id) => {
   // getPost와 post list 가공은 동일함 기능 분리를 위함
   return function (dispatch, getState, { history }) {
@@ -277,6 +305,7 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
+        console.log(draft.list);
         draft.list.push(...action.payload.post_list);
         draft.list = draft.list.reduce((acc, cur) => {
           // findIndex로 누산값(cur)에 현재값이 이미 들어있나 확인해요!
@@ -298,6 +327,7 @@ export default handleActions(
     [ADD_POST]: (state, action) =>
       produce(state, (draft) => {
         // 포스트 내용을 앞 배열에 넣어주기 ( 최신순으로 보이기 위함 )
+        console.log(draft.list);
         draft.list.unshift(action.payload.post);
       }),
     [EDIT_POST]: (state, action) =>
@@ -306,6 +336,16 @@ export default handleActions(
         console.log(draft.list[idx], action.payload.post);
         /* 0 : id 값에 맞는 위치의 내용과 , 1 : 수정한 contents , image_url */
         draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
+      }),
+    [DEL_POST]: (state, action) =>
+      produce(state, (draft) => {
+        let delList = draft.list.findIndex(
+          (p) => p.id === action.payload.post_id
+        );
+
+        if (delList !== -1) {
+          draft.list.splice(delList, 1);
+        }
       }),
     [LOADING]: (state, action) =>
       produce(state, (draft) => {
@@ -323,6 +363,7 @@ const actionCreators = {
   addPostFB,
   editPostFB,
   getOnePostFB,
+  delPostFB,
 };
 
 export { actionCreators };

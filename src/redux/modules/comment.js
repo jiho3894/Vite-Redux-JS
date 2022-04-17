@@ -95,7 +95,6 @@ const addCommentFB = (post_id, contents) => {
 const getCommentFB = (post_id) => {
   return function (dispatch, getState, { history }) {
     const commentDB = firestore.collection("comment");
-
     // post_id가 없으면 바로 리턴하기!
     if (!post_id) {
       return;

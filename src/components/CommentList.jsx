@@ -9,7 +9,7 @@ const CommentList = (props) => {
   const dispatch = useDispatch();
   const comment_list = useSelector((state) => state.comment.list);
   const { post_id } = props;
-  // console.log(post_id);
+  console.log(comment_list);
   React.useEffect(() => {
     if (!comment_list[post_id]) {
       // 코멘트 정보가 없으면 불러오기

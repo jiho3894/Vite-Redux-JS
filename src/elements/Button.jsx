@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 const Button = (props) => {
   const { text, _onClick, is_float, children, margin, width, padding } = props;
-
   if (is_float) {
     return (
       <React.Fragment>

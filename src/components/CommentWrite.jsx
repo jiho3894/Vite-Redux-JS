@@ -8,13 +8,12 @@ const CommentWrite = (props) => {
   const [comment_text, setCommentText] = React.useState("");
 
   const { post_id } = props;
-  console.log(post_id);
+  // console.log(post_id);
   const onChange = (e) => {
     setCommentText(e.target.value);
   };
 
   const write = () => {
-    console.log(comment_text);
     if (comment_text === "") {
       window.alert("댓글을 입력해주세요!");
       return;

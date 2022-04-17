@@ -14,14 +14,14 @@ const PostWrite = (props) => {
   const preview = useSelector((state) => state.image.preview);
   // 최초에는 null 이후에 dispatch(imageActions.setPreview(_post.image_url));
   // 과정으로 다시 값이 들어옴
-  console.log(preview);
+  // console.log(preview);
   const post_list = useSelector((state) => state.post.list);
 
   // prop에는 history , match , location 이 있음
   // 현재 상태 -- 수정을 원할때도 같은 컴포넌트 사용중
   // 해당 router /:id 값이 현재 값과 동일함
   const post_id = props.match.params.id;
-  console.log(props);
+  // console.log(props);
   // 현재 상태 -- 수정 페이지 ? true : false
   const is_edit = post_id ? true : false;
 
@@ -32,6 +32,7 @@ const PostWrite = (props) => {
   // console.log(_post); <==
   // 해당 값이 있으면 그 값의 comment input 값에 그대로 나오게
   const [contents, setContents] = React.useState(_post ? _post.contents : "");
+  const [write, setWrite] = React.useState(true);
 
   // 해당 링크가 정확하지 않으면 ex) 고의로 write/{ramdom} 적으면
   // 즉시 전 페이지로 이동하고 해당 컴포넌트는 return
@@ -54,13 +55,23 @@ const PostWrite = (props) => {
 
   const changeContents = (e) => {
     setContents(e.target.value);
+    if (e.target.value.length > 1) {
+      setWrite(false);
+    } else {
+      setWrite(true);
+    }
   };
 
   const addPost = () => {
     //addPostFB contents state값을 넣어서 dispatch =>
     //addPostFB => 해당 contents 값 가져가 initialPost 내용 변경 =>
     // history.replace('/')
-    dispatch(postActions.addPostFB(contents));
+    if (preview) {
+      dispatch(postActions.addPostFB(contents));
+    } else {
+      alert("이미지와 함께 업로드 해주세요");
+      return;
+    }
   };
 
   const editPost = () => {
@@ -127,7 +138,11 @@ const PostWrite = (props) => {
         {is_edit ? (
           <Button text="게시글 수정" _onClick={editPost}></Button>
         ) : (
-          <Button text="게시글 작성" _onClick={addPost}></Button>
+          <Button
+            text="게시글 작성"
+            _onClick={addPost}
+            is_float={write}
+          ></Button>
         )}
       </Grid>
     </React.Fragment>

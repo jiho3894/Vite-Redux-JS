@@ -1,8 +1,8 @@
 //components/NotiBadge.js
 import React from "react";
 
-import { Notifications } from "@material-ui/icons";
-import { Badge } from "@material-ui/core";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import Badge from "@mui/material/Badge";
 import { realtime } from "../shared/firebase";
 import { useSelector } from "react-redux";
 const NotiBadge = (props) => {
@@ -17,21 +17,21 @@ const NotiBadge = (props) => {
     const notiDB = realtime.ref(`noti/${user_id}`);
 
     notiDB.on("value", (snapshot) => {
-      setIsRead(snapshot.val().read);
+      setIsRead(snapshot.val()?.read);
     });
     return () => notiDB.off();
   }, []);
   return (
-    <React.Fragment>
+    <>
       <Badge
         invisible={is_read}
         color="secondary"
         onClick={notiCheck}
         variant="dot"
       >
-        <Notifications />
+        <NotificationsIcon />
       </Badge>
-    </React.Fragment>
+    </>
   );
 };
 

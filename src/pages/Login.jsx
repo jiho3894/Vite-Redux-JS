@@ -2,16 +2,30 @@ import React from "react";
 import { Text, Input, Grid, Button } from "../elements";
 import { getCookie, setCookie, deleteCookie } from "../shared/Cookie";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
 import { emailCheck } from "../shared/common";
+import { apiKey } from "../shared/firebase";
 
 const Login = (props) => {
   // console.log(props); history props
   const dispatch = useDispatch();
+  const { history } = props;
+  const user_info = useSelector((state) => state.user.user);
+  const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]`;
+  const is_session = sessionStorage.getItem(_session_key) ? true : false;
 
+  React.useEffect(() => {
+    if (is_session) {
+      // session 이 존재하면 로그인 페이지 벗어나기
+      //
+      alert("로그인 상태");
+      history.push("/");
+    }
+  }, []);
   const [id, setId] = React.useState("");
   const [pwd, setPwd] = React.useState("");
+  const [write, setWrite] = React.useState(true);
 
   const login = () => {
     console.log(id);
@@ -55,6 +69,11 @@ const Login = (props) => {
             type="password"
             _onChange={(e) => {
               setPwd(e.target.value);
+              if (e.target.value.length > 1) {
+                setWrite(false);
+              } else {
+                setWrite(true);
+              }
             }}
             value={pwd}
             is_submit
@@ -68,6 +87,7 @@ const Login = (props) => {
             console.log("로그인 했어!");
             login();
           }}
+          is_float={write}
         ></Button>
       </Grid>
     </React.Fragment>

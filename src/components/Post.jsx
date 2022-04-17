@@ -1,11 +1,21 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Grid, Image, Text, Button } from "../elements";
 
 import { history } from "../redux/configureStore";
+import { actionCreators as postActions } from "../redux/modules/post";
+import { actionCreators as likeActions } from "../redux/modules/like";
 
-const Post = (props) => {
+const Post = React.memo((props) => {
+  const disPatch = useDispatch();
   // console.log(props.is_me); 본인인지 확인하기
-  // console.log(props);
+  console.log(props.id);
+  const deletePost = () => {
+    confirm("삭제하시겠습니까?") == true
+      ? disPatch(postActions.delPostFB(props.id))
+      : false;
+  };
+
   return (
     <React.Fragment>
       <Grid>
@@ -19,16 +29,26 @@ const Post = (props) => {
             <Text>{props.insert_dt}</Text>
             {/* 본인이 true이면 수정 버튼으로 가는 버튼 생성 */}
             {props.is_me && (
-              <Button
-                width="auto"
-                margin="4px"
-                padding="4px"
-                _onClick={() => {
-                  history.push(`/write/${props.id}`);
-                }}
-              >
-                수정
-              </Button>
+              <React.Fragment>
+                <Button
+                  width="auto"
+                  margin="4px"
+                  padding="4px"
+                  _onClick={() => {
+                    history.push(`/write/${props.id}`);
+                  }}
+                >
+                  수정
+                </Button>
+                <Button
+                  width="auto"
+                  margin="4px"
+                  padding="4px"
+                  _onClick={deletePost}
+                >
+                  삭제
+                </Button>
+              </React.Fragment>
             )}
           </Grid>
         </Grid>
@@ -38,7 +58,7 @@ const Post = (props) => {
         <Grid>
           <Image shape="rectangle" src={props.image_url} />
         </Grid>
-        <Grid padding="16px">
+        <Grid padding="16px" is_flex>
           <Text margin="0px" bold>
             댓글 {props.comment_cnt}개
           </Text>
@@ -46,7 +66,7 @@ const Post = (props) => {
       </Grid>
     </React.Fragment>
   );
-};
+});
 
 Post.defaultProps = {
   user_info: {
