@@ -4,6 +4,7 @@ import Post from "../components/Post";
 import { Grid } from "../elements";
 import { actionCreators as postActions } from "../redux/modules/post";
 import InfinityScroll from "../shared/InfinityScroll";
+import Container from "@mui/material/Container";
 
 const PostList = (props) => {
   // console.log(props); history props
@@ -28,28 +29,30 @@ const PostList = (props) => {
   }, []);
   return (
     <React.Fragment>
-      <Grid bg={"#EFF6FF"} padding="20px">
-        <InfinityScroll
-          callNext={() => dispatch(postActions.getPostFB(paging.next))}
-          is_next={paging.next ? true : false}
-          loading={is_loading}
-        >
-          {post_list.map((p, idx) => {
-            return (
-              <Grid
-                bg="#ffffff"
-                margin="8px 0px"
-                key={p.id}
-                _onClick={() => {
-                  history.push(`/post/${p.id}`);
-                }}
-              >
-                <Post {...p} />
-              </Grid>
-            );
-          })}
-        </InfinityScroll>
-      </Grid>
+      <Container>
+        <Grid bg={"#EFF6FF"} padding="20px">
+          <InfinityScroll
+            callNext={() => dispatch(postActions.getPostFB(paging.next))}
+            is_next={paging.next ? true : false}
+            loading={is_loading}
+          >
+            {post_list.map((p, idx) => {
+              return (
+                <Grid
+                  bg="#ffffff"
+                  margin="8px 0px"
+                  key={p.id}
+                  _onClick={() => {
+                    history.push(`/post/${p.id}`);
+                  }}
+                >
+                  <Post {...p} />
+                </Grid>
+              );
+            })}
+          </InfinityScroll>
+        </Grid>
+      </Container>
     </React.Fragment>
   );
 };

@@ -41,8 +41,6 @@ const Like = (props) => {
       history.push("/login");
     }
   };
-  console.log(is_like);
-  console.log(like_list);
   return (
     <React.Fragment>
       <Text margin="0px" bold>

@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Text, Button, Image, Input } from "../elements";
 import Upload from "../shared/Upload";
 
 import { useSelector, useDispatch } from "react-redux";
 import { actionCreators as postActions } from "../redux/modules/post";
 import { actionCreators as imageActions } from "../redux/modules/image";
+
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import CategoryType from "../elements/CategoryType";
 
 const PostWrite = (props) => {
   const dispatch = useDispatch();
@@ -33,6 +37,12 @@ const PostWrite = (props) => {
   // 해당 값이 있으면 그 값의 comment input 값에 그대로 나오게
   const [contents, setContents] = React.useState(_post ? _post.contents : "");
   const [write, setWrite] = React.useState(true);
+
+  const [category, setCategory] = useState("A");
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setCategory(e.target.value);
+  };
 
   // 해당 링크가 정확하지 않으면 ex) 고의로 write/{ramdom} 적으면
   // 즉시 전 페이지로 이동하고 해당 컴포넌트는 return
@@ -67,7 +77,7 @@ const PostWrite = (props) => {
     //addPostFB => 해당 contents 값 가져가 initialPost 내용 변경 =>
     // history.replace('/')
     if (preview) {
-      dispatch(postActions.addPostFB(contents));
+      dispatch(postActions.addPostFB(contents, category));
     } else {
       alert("이미지와 함께 업로드 해주세요");
       return;
@@ -80,7 +90,12 @@ const PostWrite = (props) => {
     //editPostFB => 해당 contents 값 가져가 initialState 내용 변경 =>
     // history.replace('/')
     console.log(post_id);
-    dispatch(postActions.editPostFB(post_id, { contents: contents }));
+    dispatch(
+      postActions.editPostFB(post_id, {
+        contents: contents,
+        category: category,
+      })
+    );
   };
   // 이 부분이 Signup의 is_login 상태와 겹침 is_session이 추가가 필요함
   if (!is_login) {
@@ -111,20 +126,26 @@ const PostWrite = (props) => {
         <Upload />
       </Grid>
 
+      <Select
+        labelId="demo-simple-select-filled-label"
+        id="demo-simple-select-filled"
+        value={category}
+        onChange={handleChange}
+      >
+        <MenuItem value="A">이미지 : 좌 , 작성댓글 : 우</MenuItem>
+        <MenuItem value="B">이미지: 하 , 작성댓글 : 상</MenuItem>
+        <MenuItem value="C">작성댓글: 좌, 이미지 : 우</MenuItem>
+      </Select>
+
       <Grid>
         <Grid padding="16px">
           <Text margin="0px" size="24px" bold>
             미리보기
           </Text>
         </Grid>
-
-        <Image
-          shape="rectangle"
-          src={preview ? preview : "http://via.placeholder.com/400x300"}
-        />
       </Grid>
 
-      <Grid padding="16px">
+      <CategoryType category={category}>
         <Input
           value={contents}
           _onChange={changeContents}
@@ -132,7 +153,11 @@ const PostWrite = (props) => {
           placeholder="게시글 작성"
           multiLine
         />
-      </Grid>
+        <Image
+          shape="rectangle"
+          src={preview ? preview : "http://via.placeholder.com/400x300"}
+        />
+      </CategoryType>
 
       <Grid padding="16px">
         {is_edit ? (

@@ -19,6 +19,7 @@ const PostDetail = (props) => {
   const post_list = useSelector((store) => store.post.list);
   const post_idx = post_list.findIndex((p) => p.id === id);
   const post = post_list[post_idx];
+  console.log(post);
   // 해당 id값과 동일한 post 하나만 호출 성공
   // console.log(post);
   React.useEffect(() => {
@@ -35,7 +36,7 @@ const PostDetail = (props) => {
         <Post {...post} is_me={post.user_info.user_id === user_info?.uid} />
       )}
       {/* 로그아웃 상태에서는 댓글 작성 불가 permit로 session 검사 */}
-      <Like post_id={id} id={user_info?.uid} />
+      <Like post_id={id} id={user_info?.uid} like={post?.like_cnt} />
       <Permit>
         <CommentWrite post_id={id} />
       </Permit>

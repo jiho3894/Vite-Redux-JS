@@ -66,6 +66,7 @@ const delLikeFB = (post_id, real) => {
       .then(() => {
         dispatch(delLike(post_id, real, getState().like.list[real]));
         alert("삭제 완료");
+        history.replace(`/post/${real}`);
       })
       .catch((err) => {
         console.error(err);
@@ -112,9 +113,8 @@ export default handleActions(
       produce(state, (draft) => {
         // comment는 딕셔너리 구조로 만들어서,
         // post_id로 나눠 보관
-        console.log(action.payload.like_list);
+
         draft.list[action.payload.post_id] = [...action.payload.like_list];
-        console.log(draft.list[action.payload.post_id]);
       }),
     [ADD_LIKE]: (state, action) => produce(state, (draft) => {}),
     [DEL_LIKE]: (state, action) =>
@@ -123,11 +123,10 @@ export default handleActions(
           (p) => p.id === action.payload.post_id
         );
         console.log(action.payload);
-
-        let newList = [...action.payload.like_list];
-        newList.splice(delList, 1);
-        console.log(newList);
-        draft.list[action.payload.post_id] = [...newList];
+        console.log(state, action);
+        draft.list[action.payload.post_id] = [...action.payload.like_list];
+        draft.list[action.payload.post_id].splice(delList, 1);
+        console.log(draft.list[action.payload.post_id]);
       }),
   },
   initialState

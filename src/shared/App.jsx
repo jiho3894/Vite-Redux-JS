@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
 
 import { apiKey } from "./firebase";
+import { Container } from "@mui/material";
 
 function App() {
   const dispatch = useDispatch();
@@ -29,34 +30,36 @@ function App() {
   React.useEffect(() => {
     if (is_session) {
       // session 이 존재하면 즉, 로그인 했을때 header 등 여러가지 컨트롤용
-      // 
+      //
       dispatch(userActions.loginCheckFB());
     }
   }, []);
 
   return (
     <React.Fragment>
-      <Grid>
-        <Header></Header>
-        <ConnectedRouter history={history}>
-          <Route path="/" exact component={PostList} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/signup" exact component={Signup} />
-          <Route path="/write" exact component={PostWrite} />
-          <Route path="/write/:id" exact component={PostWrite} />
-          <Route path="/post/:id" exact component={PostDetail} />
-          <Route path="/noti" exact component={Notification} />
-        </ConnectedRouter>
-      </Grid>
-      <Permit>
-        <Button
-          is_float
-          text="+"
-          _onClick={() => {
-            history.push("/write");
-          }}
-        ></Button>
-      </Permit>
+      <Container>
+        <Grid>
+          <Header></Header>
+          <ConnectedRouter history={history}>
+            <Route path="/" exact component={PostList} />
+            <Route path="/login" exact component={Login} />
+            <Route path="/signup" exact component={Signup} />
+            <Route path="/write" exact component={PostWrite} />
+            <Route path="/write/:id" exact component={PostWrite} />
+            <Route path="/post/:id" exact component={PostDetail} />
+            <Route path="/noti" exact component={Notification} />
+          </ConnectedRouter>
+        </Grid>
+        <Permit>
+          <Button
+            is_float
+            text="+"
+            _onClick={() => {
+              history.push("/write");
+            }}
+          ></Button>
+        </Permit>
+      </Container>
     </React.Fragment>
   );
 }

@@ -41,7 +41,7 @@ const initialPost = {
 /////////////////////////////////
 // API 구현할때는 필요없음 : comment_cnt , insert_dt
 
-const editPostFB = (post_id = null, post = {}) => {
+const editPostFB = (post_id = null, post = {}, category) => {
   return function (dispatch, getState, { history }) {
     // 애초에 id가 없으면 return
     if (!post_id) {
@@ -53,8 +53,6 @@ const editPostFB = (post_id = null, post = {}) => {
     // addPost로 만들어진 initialState 배열
     const _post_idx = getState().post.list.findIndex((p) => p.id === post_id);
     const _post = getState().post.list[_post_idx];
-
-    console.log(getState().post.list);
 
     const postDB = firestore.collection("post");
 
@@ -113,7 +111,7 @@ const editPostFB = (post_id = null, post = {}) => {
   };
 };
 
-const addPostFB = (contents = "") => {
+const addPostFB = (contents = "", category) => {
   return function (dispatch, getState, { history }) {
     /*    {
       “post_id”: “HrpbLbWE0D5x29VHFAcd”,
@@ -139,6 +137,7 @@ const addPostFB = (contents = "") => {
       ...initialPost,
       // 위는 Default 이후는 들어간 값
       contents: contents,
+      category: category,
       insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
     };
 
