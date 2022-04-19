@@ -23,7 +23,6 @@ const Upload = (props) => {
     reader.readAsDataURL(file);
     // 읽으면 새로운 data url reader.result에 들어감
     reader.onloadend = () => {
-      console.log(reader.result);
       //setPreview reader.result값을 넣어서 dispatch =>
       //setPreview => 해당 contents 값 가져가 initialPost 내용 변경
       dispatch(imageActions.setPreview(reader.result));

@@ -17,16 +17,12 @@ function uploadImageFB(image) {
   return function (dispatch, getState, { history }) {
     dispatch(uploading(true));
     // FB에 들어갈 사진 이름
-    console.log(`images/${new Date().getTime()}_${image.name}`);
     const _upload = storage.ref(`images/${image.name}`).put(image);
     //////////////////////////////////
     // 이후 FB 문법 변경
     _upload
       .then((snapshot) => {
-        console.log(snapshot);
-
         snapshot.ref.getDownloadURL().then((url) => {
-          console.log(url);
           // 가공한 url initialState image_url 변경
           dispatch(uploadImage(url));
         });

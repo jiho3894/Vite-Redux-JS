@@ -1,23 +1,28 @@
-import moment from "moment";
-import { firestore } from "../../shared/firebase";
-import { produce } from "immer";
 import { createAction, handleActions } from "redux-actions";
+import { produce } from "immer";
+import { firestore } from "../../shared/firebase";
+import moment from "moment";
+
+import firebase from "firebase/app";
 
 import { actionCreators as postActions } from "./post";
 
 const SET_LIKE = "SET_LIKE";
 const ADD_LIKE = "ADD_LIKE";
-const DEL_LIKE = "DEL_LIKE";
+const UNDO_LIKE = "UNDO_LIKE";
 
-const setLike = createAction(SET_LIKE, (post_id, like_list) => ({
+const setLike = createAction(SET_LIKE, (post_id, user_list) => ({
   post_id,
-  like_list,
+  user_list,
 }));
-const addLike = createAction(ADD_LIKE, (like_list) => ({ like_list }));
-const delLike = createAction(DEL_LIKE, (post_id, real, like_list) => ({
+const addLike = createAction(ADD_LIKE, (post_id, user_id) => ({
   post_id,
-  real,
-  like_list,
+  user_id,
+}));
+
+const undoLike = createAction(UNDO_LIKE, (post_id, user_id) => ({
+  post_id,
+  user_id,
 }));
 
 const initialState = {
@@ -27,82 +32,115 @@ const initialState = {
 const addLikeFB = (post_id) => {
   return function (dispatch, getState, { history }) {
     const likeDB = firestore.collection("like");
+    const user_info = getState().user.user;
+
+    // like 하나에 대해 FB 에 보낼 정보
     let like = {
-      user_id: getState().user.user,
       post_id: post_id,
+      user_id: user_info.uid,
+      insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+      user_name: user_info.user_name,
     };
-    likeDB
-      .add({ ...like })
-      .then(() => {
-        let like_list = { ...like };
-        dispatch(addLike(like_list));
-        alert("좋아요 완료!");
-        // const postDB = firestore.collection("post");
-        // const post = getState().post.list.find((l) => l.id === post_id);
-        // const increment = firebase.firestore.FieldValue.increment(1);
-        // postDB
-        //   .doc(post_id)
-        //   .update({ like_cnt: increment })
-        //   .then(() => {
-        //     dispatch(
-        //       postActions.editPost(post_id, {
-        //         like_cnt: parseInt(post.like_cnt) + 1,
-        //       })
-        //     );
-        //   });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // Firestore에 like 정보 넣기
+    likeDB.add(like).then((doc) => {
+      const postDB = firestore.collection("post");
+      like = { ...like, id: doc.id };
+
+      const post = getState().post.list.find((l) => l.id === post_id);
+
+      // like 개수 업데이트 : fb 문법
+      const increment = firebase.firestore.FieldValue.increment(1);
+      // like 에 id 넣기
+
+      postDB
+        .doc(post_id)
+        .update({ like_cnt: increment })
+        .then((_post) => {
+          // 좋아요 성공, postDB에도 업데이트 성공하면 addLike 함수 발동
+          dispatch(addLike(post_id, user_info.uid));
+
+          if (post) {
+            dispatch(
+              // post 하나에대한 수정 : like + 1
+              postActions.editPost(post_id, {
+                like_cnt: parseInt(post.like_cnt) + 1,
+              })
+            );
+          }
+        });
+    });
   };
 };
 
-const delLikeFB = (post_id, real) => {
+const undoLikeFB = (post_id) => {
   return function (dispatch, getState, { history }) {
-    const LikeDB = firestore.collection("like");
-    // console.log(getState().like.list[real]);
-    LikeDB.doc(post_id)
-      .delete()
-      .then(() => {
-        dispatch(delLike(post_id, real, getState().like.list[real]));
-        alert("삭제 완료");
-        history.replace(`/post/${real}`);
+    const likeDB = firestore.collection("like");
+    const user_info = getState().user.user;
+
+    // post_id같고, user_id도 같아야함
+    likeDB
+      .where("post_id", "==", post_id)
+      .where("user_id", "==", user_info.uid)
+      .get()
+      .then((docs) => {
+        let id = "";
+        docs.forEach((doc) => (id = doc.id));
+        likeDB
+          .doc(id)
+          .delete()
+          // like db에서 like 삭제 후 post에서 -1 해주기
+          .then(() => {
+            const postDB = firestore.collection("post");
+            const post = getState().post.list.find((l) => l.id === post_id);
+            // like 개수 업데이트 : fb 문법
+            const decrement = firebase.firestore.FieldValue.increment(-1);
+
+            postDB
+              .doc(post_id)
+              .update({ like_cnt: decrement })
+              .then((_post) => {
+                // 좋아요 취소 성공, postDB에도 업데이트 성공하면 undoLike 함수 발동
+                dispatch(undoLike(post_id, user_info.uid));
+                if (post) {
+                  if (parseInt(post.like_cnt) === 0) return;
+
+                  dispatch(
+                    // post 하나에대한 수정 : like - 1
+                    postActions.editPost(post_id, {
+                      like_cnt: parseInt(post.like_cnt) - 1,
+                    })
+                  );
+                }
+              });
+          });
       })
       .catch((err) => {
-        console.error(err);
+        console.log("좋아요 취소 오류 ", err);
       });
-
-    // .delete()
-    // .then(() => {
-    //   console.log("success");
-    // })
-    // .catch((err) => {
-    //   console.error(err);
-    // });
   };
 };
 
 const getLikeFB = (post_id) => {
   return function (dispatch, getState, { history }) {
-    const likeDB = firestore.collection("like");
-    console.log(post_id);
     if (!post_id) {
       return;
     }
+
+    const likeDB = firestore.collection("like");
 
     likeDB
       .where("post_id", "==", post_id)
       .get()
       .then((docs) => {
-        let list = [];
+        let user_list = [];
         docs.forEach((doc) => {
-          list.push({ ...doc.data(), id: doc.id });
+          user_list.push(doc.data().user_id);
         });
-        dispatch(setLike(post_id, list));
-        console.log(list);
+
+        dispatch(setLike(post_id, user_list));
       })
-      .catch((err) => {
-        console.log(post_id, err);
+      .catch((error) => {
+        console.log("해당 포스트의 좋아요 정보를 가져올 수 없음", error);
       });
   };
 };
@@ -111,31 +149,30 @@ export default handleActions(
   {
     [SET_LIKE]: (state, action) =>
       produce(state, (draft) => {
-        // comment는 딕셔너리 구조로 만들어서,
-        // post_id로 나눠 보관
-
-        draft.list[action.payload.post_id] = [...action.payload.like_list];
+        draft.list[action.payload.post_id] = action.payload.user_list;
       }),
-    [ADD_LIKE]: (state, action) => produce(state, (draft) => {}),
-    [DEL_LIKE]: (state, action) =>
+    [ADD_LIKE]: (state, action) =>
       produce(state, (draft) => {
-        let delList = state.list[action.payload.real].findIndex(
-          (p) => p.id === action.payload.post_id
-        );
-        console.log(action.payload);
-        console.log(state, action);
-        draft.list[action.payload.post_id] = [...action.payload.like_list];
-        draft.list[action.payload.post_id].splice(delList, 1);
-        console.log(draft.list[action.payload.post_id]);
+        draft.list[action.payload.post_id].push(action.payload.user_id);
+      }),
+    [UNDO_LIKE]: (state, action) =>
+      produce(state, (draft) => {
+        // 변수에 담으면 안됨..? 객체관련인가..
+        //let list = draft.list[action.payload.post_id];
+        // list = list.filter((user_id) => user_id !== action.payload.user_id);
+        // splice 말고 무조건 filter 사용하기
+        draft.list[action.payload.post_id] = draft.list[
+          action.payload.post_id
+        ].filter((user_id) => user_id !== action.payload.user_id);
       }),
   },
   initialState
 );
 
 const actionCreators = {
-  addLikeFB,
   getLikeFB,
-  delLikeFB,
+  addLikeFB,
+  undoLikeFB,
 };
 
 export { actionCreators };

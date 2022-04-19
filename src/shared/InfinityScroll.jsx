@@ -4,7 +4,6 @@ import { Spinner } from "../elements";
 
 const InfinityScroll = (props) => {
   const { children, callNext, is_next, loading } = props;
-  console.log(props);
   const _handlieScroll = _.throttle(() => {
     if (loading) {
       return;

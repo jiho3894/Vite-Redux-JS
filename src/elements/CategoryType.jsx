@@ -1,8 +1,6 @@
 import styled from "styled-components";
 
 const CategoryType = (props) => {
-  console.log(props);
-  console.log("hi");
   const { category } = props;
   if (category === "A") {
     return <AType>{props.children}</AType>;

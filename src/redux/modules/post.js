@@ -12,6 +12,13 @@ const EDIT_POST = "EDIT_POST";
 const DEL_POST = "DEL_POST";
 const LOADING = "LOADING";
 
+const LIKE_TOGGLE = "LIKE_TOGGLE";
+
+const likeToggle = createAction(LIKE_TOGGLE, (post_id, is_like = null) => ({
+  post_id,
+  is_like,
+}));
+
 const setPost = createAction(SET_POST, (post_list, paging) => ({
   post_list,
   paging,
@@ -36,6 +43,7 @@ const initialPost = {
   contents: "",
   comment_cnt: 0,
   like_cnt: 0,
+  is_like: false,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
 };
 /////////////////////////////////
@@ -58,8 +66,6 @@ const editPostFB = (post_id = null, post = {}, category) => {
 
     //////////////////////////////////
     // 이후 FB 문법 변경'
-    console.log(_image === _post.image_url);
-    console.log(post_id, { ...post });
     // 업로드 하는 이미지가 같으면 contents만 보내주기
     if (_image === _post.image_url) {
       postDB
@@ -87,8 +93,6 @@ const editPostFB = (post_id = null, post = {}, category) => {
         snapshot.ref
           .getDownloadURL()
           .then((url) => {
-            console.log(url);
-
             return url;
           })
           .then((url) => {
@@ -153,8 +157,6 @@ const addPostFB = (contents = "", category) => {
       snapshot.ref
         .getDownloadURL()
         .then((url) => {
-          console.log(url);
-
           return url;
         })
         .then((url) => {
@@ -238,7 +240,11 @@ const getPostFB = (start = null, size = 3) => {
         // 가공한 배열 list setPost를 통해 initialState 배열에 넣어주기
         // 여기서 백 api GET
         /////////////////////////////
-        dispatch(setPost(post_list, paging));
+        if (getState().user.user) {
+          dispatch(setIsLike(post_list, paging));
+        } else {
+          dispatch(setPost(post_list, paging));
+        }
       });
   };
 };
@@ -246,7 +252,6 @@ const getPostFB = (start = null, size = 3) => {
 const delPostFB = (id) => {
   return function (dispatch, getState, { history }) {
     const postDB = firestore.collection("post");
-    console.log(id);
     postDB
       .doc(id)
       .delete()
@@ -295,8 +300,108 @@ const getOnePostFB = (id) => {
           { id: doc.id, user_info: {} }
         );
 
-        dispatch(setPost([post]));
+        dispatch(setIsLike([post]));
       });
+  };
+};
+
+const toggleLikeFB = (post_id) => {
+  return function (dispatch, getState, { history }) {
+    if (!getState().user.user) {
+      return;
+    }
+    const postDB = firestore.collection("post");
+    const likeDB = firestore.collection("like");
+
+    const _idx = getState().post.list.findIndex((p) => p.id === post_id);
+
+    const _post = getState().post.list[_idx];
+
+    const user_id = getState().user.user.uid;
+
+    if (_post.is_like) {
+      likeDB
+        .where("post_id", "==", _post.id)
+        .where("user_id", "==", user_id)
+        .get()
+        .then((docs) => {
+          let batch = firestore.batch();
+
+          docs.forEach((doc) => {
+            batch.delete(likeDB.doc(doc.id));
+          });
+
+          batch.update(postDB.doc(post_id), {
+            like_cnt:
+              _post.like_cnt - 1 < 1 ? _post.like_cnt : _post.like_cnt - 1,
+          });
+          batch.commit().then(() => {
+            dispatch(likeToggle(post_id, !_post.is_like));
+            dispatch(
+              editPost(post_id, {
+                like_cnt: parseInt(_post.like_cnt) - 1,
+              })
+            );
+          });
+        })
+
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      likeDB.add({ post_id: post_id, user_id: user_id }).then((doc) => {
+        postDB
+          .doc(post_id)
+          .update({ like_cnt: _post.like_cnt + 1 })
+          .then((doc) => {
+            dispatch(likeToggle(post_id, !_post.is_like));
+            dispatch(
+              editPost(post_id, {
+                like_cnt: parseInt(_post.like_cnt) + 1,
+              })
+            );
+          });
+      });
+    }
+  };
+};
+
+const setIsLike = (_post_list, paging) => {
+  return function (dispatch, getState, { history }) {
+    if (!getState().user.is_login) {
+      return;
+    }
+
+    const likeDB = firestore.collection("like");
+
+    const post_ids = _post_list.map((p) => p.id);
+
+    let like_query = likeDB.where("post_id", "in", post_ids);
+
+    like_query.get().then((like_docs) => {
+      let like_list = {};
+      like_docs.forEach((doc) => {
+        if (like_list[doc.data().post_id]) {
+          like_list[doc.data().post_id] = [
+            ...like_list[doc.data().post_id],
+            doc.data().user_id,
+          ];
+        } else {
+          like_list[doc.data().post_id] = [doc.data().user_id];
+        }
+      });
+
+      const user_id = getState().user.user.uid;
+      let post_list = _post_list.map((p) => {
+        if (like_list[p.id] && like_list[p.id].indexOf(user_id) !== -1) {
+          return { ...p, is_like: true };
+        }
+
+        return p;
+      });
+
+      dispatch(setPost(post_list, paging));
+    });
   };
 };
 
@@ -304,7 +409,6 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
-        console.log(draft.list);
         draft.list.push(...action.payload.post_list);
         draft.list = draft.list.reduce((acc, cur) => {
           // findIndex로 누산값(cur)에 현재값이 이미 들어있나 확인해요!
@@ -326,13 +430,11 @@ export default handleActions(
     [ADD_POST]: (state, action) =>
       produce(state, (draft) => {
         // 포스트 내용을 앞 배열에 넣어주기 ( 최신순으로 보이기 위함 )
-        console.log(draft.list);
         draft.list.unshift(action.payload.post);
       }),
     [EDIT_POST]: (state, action) =>
       produce(state, (draft) => {
         let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
-        console.log(draft.list[idx], action.payload.post);
         /* 0 : id 값에 맞는 위치의 내용과 , 1 : 수정한 contents , image_url */
         draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
       }),
@@ -350,6 +452,11 @@ export default handleActions(
       produce(state, (draft) => {
         draft.is_loading = action.payload.is_loading;
       }),
+    [LIKE_TOGGLE]: (state, action) =>
+      produce(state, (draft) => {
+        let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
+        draft.list[idx].is_like = action.payload.is_like;
+      }),
   },
   initialState
 );
@@ -363,6 +470,7 @@ const actionCreators = {
   editPostFB,
   getOnePostFB,
   delPostFB,
+  toggleLikeFB,
 };
 
 export { actionCreators };

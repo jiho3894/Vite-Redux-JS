@@ -13,11 +13,11 @@ const PostList = (props) => {
   const paging = useSelector((state) => state.post.paging);
   // console.log(is_loading, paging);
   const post_list = useSelector((state) => state.post.list);
-  console.log(post_list);
-  const user_info = useSelector((state) => state.user.user);
+  // console.log(post_list);
+  // const user_info = useSelector((state) => state.user.user);
   // console.log(user_info); <== 현재 user를 확인해 수정 버튼 토글
   const { history } = props;
-  console.log(post_list);
+  // console.log(post_list);
   React.useEffect(() => {
     // 확인 용도 vite connected 전 빈 배열이긴함
     if (post_list.length < 2) {
@@ -36,7 +36,7 @@ const PostList = (props) => {
             is_next={paging.next ? true : false}
             loading={is_loading}
           >
-            {post_list.map((p, idx) => {
+            {post_list.map((p) => {
               return (
                 <Grid
                   bg="#ffffff"
@@ -45,6 +45,7 @@ const PostList = (props) => {
                   _onClick={() => {
                     history.push(`/post/${p.id}`);
                   }}
+                  cursor
                 >
                   <Post {...p} />
                 </Grid>

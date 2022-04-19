@@ -31,7 +31,6 @@ const loginFB = (id, pwd) => {
       auth
         .signInWithEmailAndPassword(id, pwd)
         .then((user) => {
-          console.log(user);
           // 로그인 유저에 대한 정보 setUser를 통해 initialState 변경
           dispatch(
             setUser({
@@ -65,7 +64,6 @@ const signupFB = (id, pwd, user_name) => {
     auth
       .createUserWithEmailAndPassword(id, pwd)
       .then((user) => {
-        console.log(user);
 
         auth.currentUser
           .updateProfile({
@@ -87,7 +85,6 @@ const signupFB = (id, pwd, user_name) => {
             );
             // 회원가입이후 메인페이지로 이동
             history.push("/");
-            console.log(initialState);
           })
           .catch((error) => {
             console.log(error);

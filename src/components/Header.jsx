@@ -1,6 +1,5 @@
 import React from "react";
-import { Grid, Text, Button } from "../elements";
-import { deleteCookie, getCookie } from "../shared/Cookie";
+import { Grid, Button } from "../elements";
 import { useSelector, useDispatch } from "react-redux";
 import { actionCreators } from "../redux/modules/user";
 import { history } from "../redux/configureStore";
@@ -17,7 +16,7 @@ const Header = (props) => {
   const is_session = sessionStorage.getItem(_session_key) ? true : false;
   return (
     <React.Fragment>
-      <Grid is_flex padding="4px 16px">
+      <Grid is_flex padding="24px">
         <Grid>
           <MainHome onClick={() => history.push("/")}>
             <span>헬로우</span>
@@ -25,12 +24,12 @@ const Header = (props) => {
         </Grid>
         {is_login && is_session ? (
           <Grid is_flex>
-            <Button text="내정보"></Button>
-            <NotiBadge
+            {/* <NotiBadge
               _onClick={() => {
                 history.push("/noti");
               }}
-            />
+            /> */}
+            {/* <Button text="내정보" /> */}
             {/* deleteCookie */}
             <Button
               text="로그아웃"

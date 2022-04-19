@@ -1,9 +1,8 @@
 import React from "react";
-import { Grid, Text, Input, Button } from "../elements";
+import { Grid } from "../elements";
 
 import { useDispatch, useSelector } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
-import { emailCheck } from "../shared/common";
 import { useForm } from "react-hook-form";
 
 import TextField from "@mui/material/TextField";
@@ -15,7 +14,6 @@ const Signup = (props) => {
 
   const { history } = props;
   const user_info = useSelector((state) => state.user.user);
-  console.log(user_info);
 
   const _session_key = `firebase:authUser:${apiKey}:[DEFAULT]`;
   const is_session = sessionStorage.getItem(_session_key) ? true : false;
@@ -32,7 +30,6 @@ const Signup = (props) => {
   const { register, handleSubmit } = useForm();
 
   const signup = (data) => {
-    console.log(data);
     if (data.Password !== data.Password2) {
       alert("틀려");
       return;

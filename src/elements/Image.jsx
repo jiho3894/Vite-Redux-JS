@@ -57,6 +57,9 @@ const AspectInner = styled.div`
   background-image: url("${(props) => props.src}");
   background-size: cover;
   background-position: center;
+  @media screen and (max-width: 600px) {
+    width: 100px;
+  }
 `;
 
 const ImageCircle = styled.div`

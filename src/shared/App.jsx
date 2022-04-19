@@ -15,7 +15,7 @@ import Header from "../components/Header";
 import { Grid, Button } from "../elements";
 import Permit from "./Permit";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
 
 import { apiKey } from "./firebase";
@@ -34,10 +34,9 @@ function App() {
       dispatch(userActions.loginCheckFB());
     }
   }, []);
-
   return (
     <React.Fragment>
-      <Container>
+      <Container maxWidth="sm">
         <Grid>
           <Header></Header>
           <ConnectedRouter history={history}>

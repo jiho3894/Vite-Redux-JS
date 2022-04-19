@@ -20,7 +20,6 @@ const PostWrite = (props) => {
   // 과정으로 다시 값이 들어옴
   // console.log(preview);
   const post_list = useSelector((state) => state.post.list);
-
   // prop에는 history , match , location 이 있음
   // 현재 상태 -- 수정을 원할때도 같은 컴포넌트 사용중
   // 해당 router /:id 값이 현재 값과 동일함
@@ -37,10 +36,8 @@ const PostWrite = (props) => {
   // 해당 값이 있으면 그 값의 comment input 값에 그대로 나오게
   const [contents, setContents] = React.useState(_post ? _post.contents : "");
   const [write, setWrite] = React.useState(true);
-
   const [category, setCategory] = useState("A");
   const handleChange = (e) => {
-    console.log(e.target.value);
     setCategory(e.target.value);
   };
 
@@ -48,9 +45,8 @@ const PostWrite = (props) => {
   // 즉시 전 페이지로 이동하고 해당 컴포넌트는 return
   React.useEffect(() => {
     if (is_edit && !_post) {
-      console.log("포스트 정보가 없어요!");
+      alert("포스트 정보가 없어요!");
       history.goBack();
-
       return;
     }
     // console.log(is_edit); <==
@@ -89,7 +85,7 @@ const PostWrite = (props) => {
     // contents state값을 넣어서 dispatch =>
     //editPostFB => 해당 contents 값 가져가 initialState 내용 변경 =>
     // history.replace('/')
-    console.log(post_id);
+    // console.log(post_id);
     dispatch(
       postActions.editPostFB(post_id, {
         contents: contents,
